@@ -10,7 +10,7 @@ type Props = {
 export const ProtectedRoute = ({
   children,
   onlyUnAuth = false,
-  redirectTo,
+  redirectTo
 }: Props) => {
   const location = useLocation();
 

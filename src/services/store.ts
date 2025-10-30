@@ -6,10 +6,19 @@ import {
   useSelector as selectorHook
 } from 'react-redux';
 
-const rootReducer = () => {}; // Заменить на импорт настоящего редьюсера
+// const rootReducer = () => {}; // Заменить на импорт настоящего редьюсера
+
+//  временно:
+const initial = {
+  ingredients: { items: [], isLoading: false, error: null },
+  burgerConstructor: { bun: null, items: [] }
+};
+function rootReducer(state = initial, _action: any) {
+  return state;
+}
 
 const store = configureStore({
-  reducer: rootReducer,
+  reducer: rootReducer as any,
   devTools: process.env.NODE_ENV !== 'production'
 });
 
