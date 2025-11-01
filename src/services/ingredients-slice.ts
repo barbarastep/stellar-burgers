@@ -17,7 +17,7 @@ const initialState: IngredientsState = {
 export const fetchIngredients = createAsyncThunk<TIngredient[]>(
   'ingredients/fetchAll',
   async () => {
-    const data = await getIngredientsApi(); // вернёт TIngredient[]
+    const data = await getIngredientsApi();
     return data;
   }
 );
@@ -28,37 +28,20 @@ const ingredientsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // .addCase(fetchIngredients.pending, (state) => {
-      //   state.isLoading = true;
-      //   state.error = null;
-      // })
-      // .addCase(
-      //   fetchIngredients.fulfilled,
-      //   (state, action: PayloadAction<TIngredient[]>) => {
-      //     state.isLoading = false;
-      //     state.items = action.payload;
-      //   }
-      // )
-      // .addCase(fetchIngredients.rejected, (state, action) => {
-      //   state.isLoading = false;
-      //   state.error = action.error.message || 'Failed to load ingredients';
-      // });
       .addCase(fetchIngredients.pending, (state) => {
-        console.log('[fetchIngredients] → Запрос отправлен');
         state.isLoading = true;
+        state.error = null;
       })
-      .addCase(fetchIngredients.fulfilled, (state, action) => {
-        console.log(
-          '[fetchIngredients] → Ответ получен:',
-          action.payload.length,
-          'ингредиентов'
-        );
-        state.isLoading = false;
-        state.items = action.payload;
-      })
+      .addCase(
+        fetchIngredients.fulfilled,
+        (state, action: PayloadAction<TIngredient[]>) => {
+          state.isLoading = false;
+          state.items = action.payload;
+        }
+      )
       .addCase(fetchIngredients.rejected, (state, action) => {
-        console.log('[fetchIngredients] → Ошибка запроса:', action.error);
         state.isLoading = false;
+        state.error = action.error.message || 'Failed to load ingredients';
       });
   }
 });

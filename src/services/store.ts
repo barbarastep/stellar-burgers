@@ -6,15 +6,6 @@ import {
 } from 'react-redux';
 import { rootReducer, RootState as RootStateFromReducer } from './root-reducer';
 
-//  временно:
-// const initial = {
-//   ingredients: { items: [], isLoading: false, error: null },
-//   burgerConstructor: { bun: null, items: [] }
-// };
-// function rootReducer(state = initial, _action: any) {
-//   return state;
-// }
-
 const store = configureStore({
   reducer: rootReducer,
   devTools: process.env.NODE_ENV !== 'production'
