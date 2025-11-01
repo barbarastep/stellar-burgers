@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import {
   ConstructorPage,
@@ -21,6 +22,9 @@ import {
   OrderInfo
 } from '@components';
 
+import { useDispatch } from '../../services/store';
+import { initAuth } from '../../services/slices/user-slice';
+
 const App = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -28,6 +32,11 @@ const App = () => {
     (location.state && (location.state as any).background) || null;
 
   const closeModal = () => navigate(-1);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(initAuth());
+  }, [dispatch]);
 
   return (
     <div className={styles.app}>

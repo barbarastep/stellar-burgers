@@ -7,4 +7,8 @@ export type BurgerConstructorUIProps = {
   orderModalData: TOrder | null;
   onOrderClick: () => void;
   closeOrderModal: () => void;
+
+  onItemMoveUp: (index: number) => void;
+  onItemMoveDown: (index: number) => void;
+  onItemRemove: (id: string) => void;
 };

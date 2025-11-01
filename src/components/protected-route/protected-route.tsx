@@ -1,10 +1,11 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { ReactElement } from 'react';
+import { useSelector } from '../../services/store';
 
 type Props = {
   children: ReactElement;
   onlyUnAuth?: boolean; // Доступ только НЕавторизованным пользователям
-  redirectTo?: string; // Куда редиректить при нарушении доступа
+  redirectTo?: string;
 };
 
 export const ProtectedRoute = ({
@@ -14,9 +15,13 @@ export const ProtectedRoute = ({
 }: Props) => {
   const location = useLocation();
 
-  // Временная логика авторизации
-  const isAuth = Boolean(localStorage.getItem('token'));
-  const isAuthChecked = true;
+  // Логика авторизации
+  const isAuth = useSelector((s) => Boolean(s.user.data));
+  const isAuthChecked = useSelector((s) => s.user.isAuthChecked);
+
+  if (!isAuthChecked) {
+    return null;
+  }
 
   // Страницы, доступные только НЕавторизованным пользователям
   if (onlyUnAuth && isAuth) {
