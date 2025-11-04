@@ -1,6 +1,13 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { TUser } from '../../utils/types';
-import { loginUserApi, getUserApi, logoutApi } from '../../utils/burger-api';
+import {
+  loginUserApi,
+  getUserApi,
+  logoutApi,
+  registerUserApi,
+  TRegisterData,
+  updateUserApi
+} from '../../utils/burger-api';
 import { setCookie, deleteCookie } from '../../utils/cookie';
 
 export type LoginPayload = { email: string; password: string };
@@ -47,6 +54,25 @@ export const logoutUser = createAsyncThunk<void>('user/logout', async () => {
   localStorage.removeItem('refreshToken');
 });
 
+export const registerUser = createAsyncThunk<TUser, TRegisterData>(
+  'user/register',
+  async (payload) => {
+    const res = await registerUserApi(payload);
+    setCookie('accessToken', res.accessToken);
+    localStorage.setItem('refreshToken', res.refreshToken);
+    return res.user;
+  }
+);
+
+// обновление данных пользователя
+export const updateUser = createAsyncThunk<TUser, Partial<TRegisterData>>(
+  'user/update',
+  async (payload) => {
+    const res = await updateUserApi(payload); // { success, user }
+    return res.user;
+  }
+);
+
 const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -86,6 +112,35 @@ const userSlice = createSlice({
     // logout
     b.addCase(logoutUser.fulfilled, (s) => {
       s.data = null;
+    });
+
+    // register
+    b.addCase(registerUser.pending, (s) => {
+      s.isLoading = true;
+      s.error = null;
+    });
+    b.addCase(registerUser.fulfilled, (s, a: PayloadAction<TUser>) => {
+      s.isLoading = false;
+      s.data = a.payload;
+      s.isAuthChecked = true;
+    });
+    b.addCase(registerUser.rejected, (s, a) => {
+      s.isLoading = false;
+      s.error = a.error.message || 'Register failed';
+    });
+
+    // update
+    b.addCase(updateUser.pending, (s) => {
+      s.isLoading = true;
+      s.error = null;
+    });
+    b.addCase(updateUser.fulfilled, (s, a: PayloadAction<TUser>) => {
+      s.isLoading = false;
+      s.data = a.payload;
+    });
+    b.addCase(updateUser.rejected, (s, a) => {
+      s.isLoading = false;
+      s.error = a.error.message || 'Update failed';
     });
   }
 });
