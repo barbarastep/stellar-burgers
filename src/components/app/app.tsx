@@ -13,7 +13,6 @@ import {
 } from '@pages';
 import '../../index.css';
 import styles from './app.module.css';
-
 import {
   AppHeader,
   ProtectedRoute,
@@ -21,9 +20,9 @@ import {
   IngredientDetails,
   OrderInfo
 } from '@components';
-
 import { useDispatch } from '../../services/store';
 import { initAuth } from '../../services/slices/user-slice';
+import commonStyles from '@ui-pages/common.module.css';
 
 const App = () => {
   const location = useLocation();
@@ -120,7 +119,7 @@ const App = () => {
           <Route
             path='/ingredients/:id'
             element={
-              <Modal title='Детали ингредиента' onClose={closeModal}>
+              <Modal onClose={closeModal}>
                 <IngredientDetails />
               </Modal>
             }
@@ -128,7 +127,7 @@ const App = () => {
           <Route
             path='/feed/:number'
             element={
-              <Modal title='Информация о еде' onClose={closeModal}>
+              <Modal onClose={closeModal}>
                 <OrderInfo />
               </Modal>
             }
@@ -137,7 +136,7 @@ const App = () => {
             path='/profile/orders/:number'
             element={
               <ProtectedRoute>
-                <Modal title='Информация о заказе' onClose={closeModal}>
+                <Modal onClose={closeModal}>
                   <OrderInfo />
                 </Modal>
               </ProtectedRoute>

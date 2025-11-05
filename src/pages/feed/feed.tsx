@@ -7,12 +7,17 @@ import { fetchFeeds } from '../../services/slices/feed-slice';
 export const Feed: FC = () => {
   const dispatch = useDispatch();
   const { orders, isLoading } = useSelector((s) => s.feed);
+  const placedOrder = useSelector((s) => s.order.currentOrder);
 
   useEffect(() => {
-    if (orders.length === 0) {
-      dispatch(fetchFeeds());
-    }
-  }, [dispatch, orders.length]);
+    dispatch(fetchFeeds());
+    const id = setInterval(() => dispatch(fetchFeeds()), 5000);
+    return () => clearInterval(id);
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (placedOrder) dispatch(fetchFeeds());
+  }, [dispatch, placedOrder]);
 
   if (isLoading && orders.length === 0) {
     return <Preloader />;

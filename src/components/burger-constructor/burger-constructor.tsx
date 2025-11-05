@@ -6,6 +6,7 @@ import {
   moveIngredient,
   removeIngredient
 } from '../../services/slices/constructor-slice';
+import { placeOrder, clearOrder } from '../../services/slices/order-slice';
 
 export const BurgerConstructor: FC = () => {
   const navigate = useNavigate();
@@ -15,8 +16,8 @@ export const BurgerConstructor: FC = () => {
   const { bun, ingredients } = useSelector((s) => s.burgerConstructor);
   const isAuth = useSelector((s) => Boolean(s.user.data));
 
-  const orderRequest = false; // TODO: сделать реальным
-  const orderModalData = null; // TODO: сделать реальным
+  const orderRequest = useSelector((s) => s.order.isRequest);
+  const orderModalData = useSelector((s) => s.order.currentOrder);
 
   const price = useMemo(() => {
     const bunPrice = bun ? bun.price * 2 : 0;
@@ -30,10 +31,12 @@ export const BurgerConstructor: FC = () => {
       return;
     }
     if (!bun || orderRequest) return;
-    // TODO: логика оформления/открытия модалки
+    dispatch(placeOrder());
   };
 
-  const closeOrderModal = () => {};
+  const closeOrderModal = () => {
+    dispatch(clearOrder());
+  };
 
   // перемещение/удаление
   const onItemMoveUp = (index: number) =>
