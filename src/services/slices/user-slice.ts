@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { TUser } from '../../utils/types';
 import {
   loginUserApi,
@@ -26,27 +26,34 @@ const initialState: UserState = {
   error: null
 };
 
-export const initAuth = createAsyncThunk<TUser | null>(
-  'user/initAuth',
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await getUserApi();
-      return res.user;
-    } catch {
-      return rejectWithValue(null); // нет токена / нужно повторно залогиниться
-    }
+export const initAuth = createAsyncThunk<
+  TUser | null,
+  void,
+  { rejectValue: null }
+>('user/initAuth', async (_, { rejectWithValue }) => {
+  try {
+    const res = await getUserApi();
+    return res.user;
+  } catch {
+    return rejectWithValue(null); // нет токена / нужно повторно залогиниться
   }
-);
+});
 
-export const loginUser = createAsyncThunk<TUser, LoginPayload>(
-  'user/login',
-  async (payload) => {
+export const loginUser = createAsyncThunk<
+  TUser,
+  LoginPayload,
+  { rejectValue: string }
+>('user/login', async (payload, { rejectWithValue }) => {
+  try {
     const res = await loginUserApi(payload);
     setCookie('accessToken', res.accessToken);
     localStorage.setItem('refreshToken', res.refreshToken);
     return res.user;
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Login failed';
+    return rejectWithValue(msg);
   }
-);
+});
 
 export const logoutUser = createAsyncThunk<void>('user/logout', async () => {
   await logoutApi();
@@ -54,24 +61,36 @@ export const logoutUser = createAsyncThunk<void>('user/logout', async () => {
   localStorage.removeItem('refreshToken');
 });
 
-export const registerUser = createAsyncThunk<TUser, TRegisterData>(
-  'user/register',
-  async (payload) => {
+export const registerUser = createAsyncThunk<
+  TUser,
+  TRegisterData,
+  { rejectValue: string }
+>('user/register', async (payload, { rejectWithValue }) => {
+  try {
     const res = await registerUserApi(payload);
     setCookie('accessToken', res.accessToken);
     localStorage.setItem('refreshToken', res.refreshToken);
     return res.user;
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Register failed';
+    return rejectWithValue(msg);
   }
-);
+});
 
 // обновление данных пользователя
-export const updateUser = createAsyncThunk<TUser, Partial<TRegisterData>>(
-  'user/update',
-  async (payload) => {
+export const updateUser = createAsyncThunk<
+  TUser,
+  Partial<TRegisterData>,
+  { rejectValue: string }
+>('user/update', async (payload, { rejectWithValue }) => {
+  try {
     const res = await updateUserApi(payload); // { success, user }
     return res.user;
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Update failed';
+    return rejectWithValue(msg);
   }
-);
+});
 
 const userSlice = createSlice({
   name: 'user',
@@ -83,7 +102,7 @@ const userSlice = createSlice({
       s.isLoading = true;
       s.error = null;
     });
-    b.addCase(initAuth.fulfilled, (s, a: PayloadAction<TUser | null>) => {
+    b.addCase(initAuth.fulfilled, (s, a) => {
       s.isLoading = false;
       s.data = a.payload;
       s.isAuthChecked = true;
@@ -99,14 +118,14 @@ const userSlice = createSlice({
       s.isLoading = true;
       s.error = null;
     });
-    b.addCase(loginUser.fulfilled, (s, a: PayloadAction<TUser>) => {
+    b.addCase(loginUser.fulfilled, (s, a) => {
       s.isLoading = false;
       s.data = a.payload;
       s.isAuthChecked = true;
     });
     b.addCase(loginUser.rejected, (s, a) => {
       s.isLoading = false;
-      s.error = a.error.message || 'Login failed';
+      s.error = a.payload ?? a.error.message ?? 'Login failed';
     });
 
     // logout
@@ -119,14 +138,14 @@ const userSlice = createSlice({
       s.isLoading = true;
       s.error = null;
     });
-    b.addCase(registerUser.fulfilled, (s, a: PayloadAction<TUser>) => {
+    b.addCase(registerUser.fulfilled, (s, a) => {
       s.isLoading = false;
       s.data = a.payload;
       s.isAuthChecked = true;
     });
     b.addCase(registerUser.rejected, (s, a) => {
       s.isLoading = false;
-      s.error = a.error.message || 'Register failed';
+      s.error = a.payload ?? a.error.message ?? 'Register failed';
     });
 
     // update
@@ -134,13 +153,13 @@ const userSlice = createSlice({
       s.isLoading = true;
       s.error = null;
     });
-    b.addCase(updateUser.fulfilled, (s, a: PayloadAction<TUser>) => {
+    b.addCase(updateUser.fulfilled, (s, a) => {
       s.isLoading = false;
       s.data = a.payload;
     });
     b.addCase(updateUser.rejected, (s, a) => {
       s.isLoading = false;
-      s.error = a.error.message || 'Update failed';
+      s.error = a.payload ?? a.error.message ?? 'Update failed';
     });
   }
 });

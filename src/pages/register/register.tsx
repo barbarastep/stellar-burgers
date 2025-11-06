@@ -1,6 +1,6 @@
 import { FC, SyntheticEvent, useState } from 'react';
 import { useDispatch, useSelector } from '../../services/store';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Location } from 'react-router-dom';
 import { RegisterUI } from '@ui-pages';
 import { registerUser } from '../../services/slices/user-slice';
 
@@ -12,7 +12,8 @@ export const Register: FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = (location.state as any)?.from?.pathname || '/';
+  type LocationState = { from?: Location } | null;
+  const from = (location.state as LocationState)?.from?.pathname ?? '/';
 
   const errorText = useSelector((s) => s.user.error);
 

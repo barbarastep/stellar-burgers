@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Location } from 'react-router-dom';
 import { FC, SyntheticEvent, useState } from 'react';
 import { LoginUI } from '@ui-pages';
 import { useDispatch } from '../../services/store';
@@ -12,7 +12,8 @@ export const Login: FC = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const from = (location.state as any)?.from?.pathname || '/';
+  type LocationState = { from?: Location } | null;
+  const from = (location.state as LocationState)?.from?.pathname ?? '/';
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();

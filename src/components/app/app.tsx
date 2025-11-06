@@ -1,5 +1,11 @@
 import { useEffect } from 'react';
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+  Location
+} from 'react-router-dom';
 import {
   ConstructorPage,
   Feed,
@@ -27,8 +33,8 @@ import commonStyles from '@ui-pages/common.module.css';
 const App = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const background =
-    (location.state && (location.state as any).background) || null;
+  type LocationState = { background?: Location } | null;
+  const background = (location.state as LocationState)?.background ?? null;
 
   const closeModal = () => navigate(-1);
   const dispatch = useDispatch();

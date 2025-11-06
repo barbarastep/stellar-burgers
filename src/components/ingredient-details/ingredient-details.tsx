@@ -1,5 +1,5 @@
 import { FC, useEffect } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, Location } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../services/store';
 import { fetchIngredients } from '../../services/slices/ingredients-slice';
 import { Preloader } from '@ui';
@@ -8,7 +8,8 @@ import commonStyles from '@ui-pages/common.module.css';
 
 export const IngredientDetails: FC = () => {
   const { id } = useParams<{ id: string }>();
-  const location = useLocation() as any;
+  type LocationState = { background?: Location } | null;
+  const location = useLocation() as Location & { state: LocationState };
   const hasBackground = Boolean(location?.state?.background);
 
   const dispatch = useDispatch();
