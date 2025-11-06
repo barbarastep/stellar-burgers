@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { orderBurgerApi, getOrderByNumberApi } from '../../utils/burger-api';
 import { TOrder } from '../../utils/types';
+import { clearConstructor } from './constructor-slice';
 import { RootState } from '../store';
 
 type OrderState = {
@@ -17,11 +18,12 @@ const initialState: OrderState = {
 
 export const placeOrder = createAsyncThunk<TOrder, void, { state: RootState }>(
   'order/placeOrder',
-  async (_, { getState }) => {
+  async (_, { getState, dispatch }) => {
     const { bun, ingredients } = getState().burgerConstructor;
     if (!bun) throw new Error('No bun selected');
     const ids = [bun._id, ...ingredients.map((i) => i._id), bun._id];
     const res = await orderBurgerApi(ids);
+    dispatch(clearConstructor());
     return res.order;
   }
 );
