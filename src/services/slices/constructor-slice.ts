@@ -11,20 +11,29 @@ const initialState: ConstructorState = {
   ingredients: []
 };
 
-const toCons = (i: TIngredient): TConstructorIngredient => ({
-  ...i,
-  id: nanoid()
-});
-
 const constructorSlice = createSlice({
   name: 'burgerConstructor',
   initialState,
   reducers: {
-    setBun(state, action: PayloadAction<TIngredient>) {
-      state.bun = toCons(action.payload);
+    setBun: {
+      reducer(state, action: PayloadAction<TConstructorIngredient>) {
+        state.bun = action.payload;
+      },
+      prepare(ingredient: TIngredient) {
+        return {
+          payload: { ...ingredient, id: nanoid() } as TConstructorIngredient
+        };
+      }
     },
-    addIngredient(state, action: PayloadAction<TIngredient>) {
-      state.ingredients.push(toCons(action.payload));
+    addIngredient: {
+      reducer(state, action: PayloadAction<TConstructorIngredient>) {
+        state.ingredients.push(action.payload);
+      },
+      prepare(ingredient: TIngredient) {
+        return {
+          payload: { ...ingredient, id: nanoid() } as TConstructorIngredient
+        };
+      }
     },
     removeIngredient(state, action: PayloadAction<string>) {
       // payload = id
