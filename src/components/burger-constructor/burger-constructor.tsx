@@ -1,45 +1,64 @@
 import { FC, useMemo } from 'react';
-import { TConstructorIngredient } from '@utils-types';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { BurgerConstructorUI } from '@ui';
+import { useDispatch, useSelector } from '../../services/store';
+import {
+  moveIngredient,
+  removeIngredient
+} from '../../services/slices/constructor-slice';
+import { placeOrder, clearOrder } from '../../services/slices/order-slice';
 
 export const BurgerConstructor: FC = () => {
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
-  const constructorItems = {
-    bun: {
-      price: 0
-    },
-    ingredients: []
-  };
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
 
-  const orderRequest = false;
+  const { bun, ingredients } = useSelector((s) => s.burgerConstructor);
+  const isAuth = useSelector((s) => Boolean(s.user.data));
 
-  const orderModalData = null;
+  const orderRequest = useSelector((s) => s.order.isRequest);
+  const orderModalData = useSelector((s) => s.order.currentOrder);
+
+  const price = useMemo(() => {
+    const bunPrice = bun ? bun.price * 2 : 0;
+    const ingPrice = ingredients.reduce((sum, v) => sum + v.price, 0);
+    return bunPrice + ingPrice;
+  }, [bun, ingredients]);
 
   const onOrderClick = () => {
-    if (!constructorItems.bun || orderRequest) return;
+    if (!isAuth) {
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+    if (!bun || orderRequest) return;
+    dispatch(placeOrder());
   };
-  const closeOrderModal = () => {};
 
-  const price = useMemo(
-    () =>
-      (constructorItems.bun ? constructorItems.bun.price * 2 : 0) +
-      constructorItems.ingredients.reduce(
-        (s: number, v: TConstructorIngredient) => s + v.price,
-        0
-      ),
-    [constructorItems]
-  );
+  const closeOrderModal = () => {
+    dispatch(clearOrder());
+  };
 
-  return null;
+  // перемещение/удаление
+  const onItemMoveUp = (index: number) =>
+    index > 0 && dispatch(moveIngredient({ from: index, to: index - 1 }));
+
+  const onItemMoveDown = (index: number) =>
+    index < ingredients.length - 1 &&
+    dispatch(moveIngredient({ from: index, to: index + 1 }));
+
+  const onItemRemove = (id: string) => dispatch(removeIngredient(id));
 
   return (
     <BurgerConstructorUI
       price={price}
       orderRequest={orderRequest}
-      constructorItems={constructorItems}
+      constructorItems={{ bun, ingredients }}
       orderModalData={orderModalData}
       onOrderClick={onOrderClick}
       closeOrderModal={closeOrderModal}
+      onItemMoveUp={onItemMoveUp}
+      onItemMoveDown={onItemMoveDown}
+      onItemRemove={onItemRemove}
     />
   );
 };
