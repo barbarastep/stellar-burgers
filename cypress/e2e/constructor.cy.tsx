@@ -10,7 +10,25 @@ describe('Ингредиенты загружаются из фикстуры', 
   it('подменяет ответ и отображает данные фикстуры', () => {
     cy.wait('@getIngredients')
     cy.wait('@getIngredients')
-    cy.contains('Краторная булка N-200i').should('be.visible')
-    cy.contains('Биокотлета из марсианской Магнолии').should('be.visible')
+    cy.contains('Краторная булка N-200i').scrollIntoView().should('be.visible')
+    cy.contains('Биокотлета из марсианской Магнолии').scrollIntoView().should('be.visible')
+  })
+
+  it('добавляет одну начинку через «Добавить» и показывает её в конструкторе', () => {
+    const fillingName = 'Биокотлета из марсианской Магнолии'
+
+    cy.wait('@getIngredients')
+    cy.wait('@getIngredients')
+
+    cy.contains(fillingName)
+      .closest('li, article, div')
+      .within(() => {
+        cy.contains('button', 'Добавить').scrollIntoView().click({ force: true })
+      })
+
+    cy.get('[data-cy="constructor"]', { timeout: 10000 })
+      .scrollIntoView()
+      .should('exist')
+      .and('contain', 'Биокотлета из марсианской Магнолии')
   })
 })
