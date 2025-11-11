@@ -31,4 +31,21 @@ describe('Ингредиенты загружаются из фикстуры', 
       .should('exist')
       .and('contain', 'Биокотлета из марсианской Магнолии')
   })
+
+  it('открывает страницу ингредиента по клику и возвращается назад', () => {
+    cy.contains('Биокотлета из марсианской Магнолии').click();
+
+    cy.location('pathname', { timeout: 10000 })
+      .should('match', /^\/ingredients\/[a-f0-9]+$/);
+
+    cy.contains('Биокотлета из марсианской Магнолии').should('be.visible');
+
+    cy.go('back');
+
+    cy.wait('@getIngredients');
+    cy.wait('@getIngredients');
+
+    cy.location('pathname').should('eq', '/');
+    cy.get('[data-cy="constructor"]').should('exist');
+  })
 })
