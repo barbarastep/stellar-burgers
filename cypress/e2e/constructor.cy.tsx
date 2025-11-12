@@ -92,4 +92,9 @@ describe('Ингредиенты загружаются из фикстуры', 
       cy.contains('Биокотлета из марсианской Магнолии').should('not.exist');
     });
   })
+
+  afterEach(() => {
+    cy.clearCookie('accessToken');
+    cy.window().then(w => w.localStorage.removeItem('refreshToken'));
+  });
 })
