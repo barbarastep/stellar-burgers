@@ -1,13 +1,11 @@
-import { ingredientsReducer, fetchIngredients } from './ingredients-slice';
+import {
+  ingredientsReducer,
+  fetchIngredients,
+  initialState as ingredientsInitialState
+} from './ingredients-slice';
 import type { TIngredient } from '../../utils/types';
 
 describe('ingredients-slice reducer', () => {
-  const initialState = {
-    items: [] as TIngredient[],
-    isLoading: false,
-    error: null as string | null
-  };
-
   const mockIngredients: TIngredient[] = [
     {
       _id: '1',
@@ -25,25 +23,30 @@ describe('ingredients-slice reducer', () => {
   ];
 
   it('должен установить isLoading в true при fetchIngredients.pending', () => {
-    const state = ingredientsReducer(initialState, { type: fetchIngredients.pending.type });
+    const state = ingredientsReducer(ingredientsInitialState, {
+      type: fetchIngredients.pending.type
+    });
+
     expect(state.isLoading).toBe(true);
     expect(state.error).toBeNull();
   });
 
   it('должен сохранить данные при fetchIngredients.fulfilled', () => {
-    const state = ingredientsReducer(initialState, {
+    const state = ingredientsReducer(ingredientsInitialState, {
       type: fetchIngredients.fulfilled.type,
       payload: mockIngredients
     });
+
     expect(state.isLoading).toBe(false);
     expect(state.items).toEqual(mockIngredients);
   });
 
   it('должен установить ошибку при fetchIngredients.rejected', () => {
-    const state = ingredientsReducer(initialState, {
+    const state = ingredientsReducer(ingredientsInitialState, {
       type: fetchIngredients.rejected.type,
       error: { message: 'Ошибка загрузки' }
     });
+
     expect(state.isLoading).toBe(false);
     expect(state.error).toBe('Ошибка загрузки');
   });
