@@ -3,7 +3,11 @@ import { getOrdersApi } from '../../utils/burger-api';
 import { TOrder } from '../../utils/types';
 
 type State = { orders: TOrder[]; isLoading: boolean; error: string | null };
-const initialState: State = { orders: [], isLoading: false, error: null };
+export const initialState: State = {
+  orders: [],
+  isLoading: false,
+  error: null
+};
 
 export const fetchUserOrders = createAsyncThunk<
   TOrder[],

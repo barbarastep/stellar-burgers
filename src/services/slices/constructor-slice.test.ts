@@ -53,31 +53,46 @@ describe('constructor-slice reducer', () => {
   };
 
   it('добавляет булку через setBun (id генерируется prepare)', () => {
-    const state1 = burgerConstructorReducer(constructorInitialState, setBun(bun));
+    const state1 = burgerConstructorReducer(
+      constructorInitialState,
+      setBun(bun)
+    );
     expect(state1.bun).toBeTruthy();
     expect(state1.bun?.name).toBe(bun.name);
     expect(state1.bun?.id).toBeDefined();
   });
 
   it('добавляет ингредиент через addIngredient (id генерируется prepare)', () => {
-    const state1 = burgerConstructorReducer(constructorInitialState, addIngredient(filling1));
+    const state1 = burgerConstructorReducer(
+      constructorInitialState,
+      addIngredient(filling1)
+    );
     expect(state1.ingredients).toHaveLength(1);
     expect(state1.ingredients[0].name).toBe(filling1.name);
     expect(state1.ingredients[0].id).toBeDefined();
   });
 
   it('удаляет ингредиент по id', () => {
-    const state1 = burgerConstructorReducer(constructorInitialState, addIngredient(filling1));
+    const state1 = burgerConstructorReducer(
+      constructorInitialState,
+      addIngredient(filling1)
+    );
     const addedId = state1.ingredients[0].id;
     const state2 = burgerConstructorReducer(state1, removeIngredient(addedId));
     expect(state2.ingredients).toHaveLength(0);
   });
 
   it('меняет порядок ингредиентов (moveIngredient)', () => {
-    const s1 = burgerConstructorReducer(constructorInitialState, addIngredient(filling1));
+    const s1 = burgerConstructorReducer(
+      constructorInitialState,
+      addIngredient(filling1)
+    );
     const s2 = burgerConstructorReducer(s1, addIngredient(filling2));
     const s3 = burgerConstructorReducer(s2, moveIngredient({ from: 0, to: 1 }));
-    expect(s3.ingredients.map((i) => i.name)).toEqual([filling2.name, filling1.name]);
+    expect(s3.ingredients.map((i) => i.name)).toEqual([
+      filling2.name,
+      filling1.name
+    ]);
   });
 
   it('очищает конструктор', () => {

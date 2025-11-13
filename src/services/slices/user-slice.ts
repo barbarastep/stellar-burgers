@@ -19,7 +19,7 @@ type UserState = {
   error: string | null;
 };
 
-const initialState: UserState = {
+export const initialState: UserState = {
   data: null,
   isAuthChecked: false,
   isLoading: false,
